@@ -1,5 +1,5 @@
 // Program.cs
-// This is where the API starts. We keep it small on purpose.
+// This is where the API starts. 
 
 // 1. Create the app builder.
 //    It reads settings from appsettings.json and from environment variables.
@@ -14,7 +14,7 @@ var app = builder.Build();
 // 4. Health check endpoints.
 //    Docker and Kubernetes will call these to ask "are you OK?".
 //    Right now both do the same thing.
-//    Later we will add a database check to /health/ready.
+
 app.MapHealthChecks("/health/live");
 app.MapHealthChecks("/health/ready");
 
