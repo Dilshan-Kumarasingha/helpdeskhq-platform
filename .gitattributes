@@ -1,0 +1,22 @@
+# Auto detect text files and normalize line endings
+* text=auto
+
+# Files that run inside Linux containers or CI runners must always use LF.
+# CRLF in a shell script or Dockerfile causes errors like "bad interpreter" or "not found".
+*.sh        text eol=lf
+Dockerfile  text eol=lf
+*.dockerfile text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.tf        text eol=lf
+*.tfvars    text eol=lf
+*.conf      text eol=lf
+*.json      text eol=lf
+
+# Binary files
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.zip  binary

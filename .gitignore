@@ -1,0 +1,61 @@
+# ---------- Secrets and local config (NEVER commit these) ----------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+appsettings.Local.json
+
+# ---------- .NET ----------
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.userprefs
+*.DotSettings.user
+TestResults/
+*.log
+.nuget/
+packages/
+
+# ---------- Node / frontend ----------
+node_modules/
+dist/
+dist-ssr/
+coverage/
+*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------- Terraform / OpenTofu ----------
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+!example.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+# keep .terraform.lock.hcl committed
+
+# ---------- Kubernetes / kind (local files) ----------
+kubeconfig
+*.kubeconfig
+
+# ---------- Docker ----------
+docker-compose.override.yml
+
+# ---------- Editors and OS ----------
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.sw?
+.DS_Store
+Thumbs.db
+desktop.ini
