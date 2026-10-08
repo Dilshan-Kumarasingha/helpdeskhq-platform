@@ -1,10 +1,10 @@
 ﻿namespace HelpDeskHQ.Api.Models;
 
-// The steps a ticket goes through from start to finish.
+// A ticket moves forward through these states, from Open to Closed.
 public enum TicketStatus
 {
-	Open,
-	InProgress,
-	Resolved,
-	Closed
+    Open,
+    InProgress,
+    Resolved,
+    Closed
 }

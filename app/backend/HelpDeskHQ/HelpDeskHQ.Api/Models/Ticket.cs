@@ -1,15 +1,16 @@
 ﻿namespace HelpDeskHQ.Api.Models;
 
-// A Ticket is one support request.
 public class Ticket
 {
-	public int Id { get; set; }
+    public int Id { get; set; }
 
-	public string Title { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
 
-	public string Description { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
 
-	public TicketStatus Status { get; set; } = TicketStatus.Open;
+    // New tickets always start as Open.
+    public TicketStatus Status { get; set; } = TicketStatus.Open;
 
-	public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    // Stored in UTC so the time does not depend on the server's time zone.
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
