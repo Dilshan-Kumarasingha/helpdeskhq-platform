@@ -3,43 +3,43 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Read the database connection string from the settings.
+// The connection string comes from user secrets on my machine
+// and from an environment variable when the app runs in a container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// If the setting is missing, stop with a clear message.
 if (connectionString == null)
 {
-	throw new Exception("Database connection string is missing.");
+    throw new Exception("ConnectionStrings:DefaultConnection is not set.");
 }
 
-// Tell the app to use PostgreSQL.
 builder.Services.AddDbContext<AppDbContext>(options =>
-	options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString));
 
-// Add a health check that tests the database connection.
+builder.Services.AddControllers();
+
 builder.Services.AddHealthChecks()
-	.AddDbContextCheck<AppDbContext>();
+    .AddDbContextCheck<AppDbContext>();
 
 var app = builder.Build();
 
-// "Is the app running?" This does not touch the database.
+app.MapControllers();
+
+// Liveness only says the app is running, so it does not check the database.
 app.MapGet("/health/live", () => "Healthy");
 
-// "Is the app ready to work?" This also checks the database.
+// Readiness also checks the database connection.
 app.MapHealthChecks("/health/ready");
 
-// Shows which version is running.
-// The version comes from the APP_VERSION environment variable.
-// If it is not set, we show "dev".
+// Shows which version is running. APP_VERSION is set at deploy time.
 app.MapGet("/api/info", () =>
 {
-	var version = app.Configuration["APP_VERSION"] ?? "dev";
+    var version = app.Configuration["APP_VERSION"] ?? "dev";
 
-	return new
-	{
-		name = "HelpDeskHQ.Api",
-		version = version
-	};
+    return new
+    {
+        name = "HelpDeskHQ.Api",
+        version = version
+    };
 });
 
 app.Run();
