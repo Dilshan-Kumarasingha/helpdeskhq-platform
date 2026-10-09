@@ -1,5 +1,9 @@
+using System.Text;
 using HelpDeskHQ.Api.Data;
+using HelpDeskHQ.Api.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +16,35 @@ if (connectionString == null)
     throw new Exception("ConnectionStrings:DefaultConnection is not set.");
 }
 
+var jwtKey = builder.Configuration["Jwt:Key"];
+
+if (jwtKey == null)
+{
+    throw new Exception("Jwt:Key is not set.");
+}
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped<TokenService>();
+
+// The API accepts a token only if the signature, issuer, audience and expiry are all valid.
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
 
@@ -21,6 +52,10 @@ builder.Services.AddHealthChecks()
     .AddDbContextCheck<AppDbContext>();
 
 var app = builder.Build();
+
+// Authentication must come before authorization, because the API has to know who you are first.
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

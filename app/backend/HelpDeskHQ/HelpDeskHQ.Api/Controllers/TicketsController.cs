@@ -1,10 +1,13 @@
 ﻿using HelpDeskHQ.Api.Data;
 using HelpDeskHQ.Api.Dtos;
 using HelpDeskHQ.Api.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HelpDeskHQ.Api.Controllers;
 
+// Every ticket endpoint needs a valid token.
+[Authorize]
 [ApiController]
 [Route("api/tickets")]
 public class TicketsController : ControllerBase
@@ -54,6 +57,8 @@ public class TicketsController : ControllerBase
         return Created("/api/tickets/" + newTicket.Id, newTicket);
     }
 
+    // Employees can report problems, but only support staff can move a ticket forward.
+    [Authorize(Roles = "Agent,Admin")]
     [HttpPut("{id}/status")]
     public IActionResult UpdateStatus(int id, UpdateTicketStatusRequest request)
     {
