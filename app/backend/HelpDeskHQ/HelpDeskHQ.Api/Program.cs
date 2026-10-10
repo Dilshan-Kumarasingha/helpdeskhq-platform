@@ -32,9 +32,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<SlaJob>();
 
-builder.Services.AddHangfire(config =>
-    config.UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString)));
-builder.Services.AddHangfireServer();
+// Hangfire needs a real PostgreSQL, so the integration tests leave it out.
+if (!builder.Environment.IsEnvironment("Testing"))
+{
+    builder.Services.AddHangfire(config =>
+        config.UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString)));
+    builder.Services.AddHangfireServer();
+}
 
 // The API accepts a token only if the signature, issuer, audience and expiry are all valid.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -85,7 +89,15 @@ app.MapGet("/api/info", () =>
     };
 });
 
-var jobManager = app.Services.GetRequiredService<IRecurringJobManager>();
-jobManager.AddOrUpdate<SlaJob>("sla-escalation", job => job.EscalateOldTickets(), "*/5 * * * *");
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    var jobManager = app.Services.GetRequiredService<IRecurringJobManager>();
+    jobManager.AddOrUpdate<SlaJob>("sla-escalation", job => job.EscalateOldTickets(), "*/5 * * * *");
+}
 
 app.Run();
+
+// The test project needs this to start the API.
+public partial class Program
+{
+}
