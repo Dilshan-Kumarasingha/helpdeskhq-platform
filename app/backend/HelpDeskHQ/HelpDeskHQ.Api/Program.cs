@@ -1,5 +1,8 @@
 using System.Text;
+using Hangfire;
+using Hangfire.PostgreSql;
 using HelpDeskHQ.Api.Data;
+using HelpDeskHQ.Api.Jobs;
 using HelpDeskHQ.Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +30,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<TokenService>();
+builder.Services.AddScoped<SlaJob>();
+
+builder.Services.AddHangfire(config =>
+    config.UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connectionString)));
+builder.Services.AddHangfireServer();
 
 // The API accepts a token only if the signature, issuer, audience and expiry are all valid.
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -76,5 +84,8 @@ app.MapGet("/api/info", () =>
         version = version
     };
 });
+
+var jobManager = app.Services.GetRequiredService<IRecurringJobManager>();
+jobManager.AddOrUpdate<SlaJob>("sla-escalation", job => job.EscalateOldTickets(), "*/5 * * * *");
 
 app.Run();

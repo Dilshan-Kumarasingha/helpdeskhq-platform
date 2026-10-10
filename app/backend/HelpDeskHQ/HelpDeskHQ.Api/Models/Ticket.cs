@@ -13,4 +13,7 @@ public class Ticket
 
     // Stored in UTC so the time does not depend on the server's time zone.
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    // Set by the SLA job, so a ticket is never escalated twice.
+    public bool IsEscalated { get; set; } = false;
 }
