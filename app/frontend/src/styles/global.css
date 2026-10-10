@@ -1,0 +1,30 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f5f7;
+  color: #222;
+}
+
+.page {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+input,
+textarea {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+  padding: 8px;
+}
+
+button {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.error {
+  color: #b00020;
+}
