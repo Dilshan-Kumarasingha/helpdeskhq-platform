@@ -5,7 +5,9 @@
 # CRLF in a shell script or Dockerfile causes errors like "bad interpreter" or "not found".
 *.sh        text eol=lf
 Dockerfile  text eol=lf
+Dockerfile.* text eol=lf
 *.dockerfile text eol=lf
+.dockerignore text eol=lf
 *.yml       text eol=lf
 *.yaml      text eol=lf
 *.tf        text eol=lf

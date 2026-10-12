@@ -1,0 +1,19 @@
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+WORKDIR /src
+
+# The project file is copied first so the restore step is cached.
+COPY app/backend/HelpDeskHQ/HelpDeskHQ.Api/HelpDeskHQ.Api.csproj HelpDeskHQ.Api/
+RUN dotnet restore HelpDeskHQ.Api/HelpDeskHQ.Api.csproj
+
+COPY app/backend/HelpDeskHQ/HelpDeskHQ.Api/ HelpDeskHQ.Api/
+RUN dotnet publish HelpDeskHQ.Api/HelpDeskHQ.Api.csproj -c Release -o /out --no-restore
+
+FROM mcr.microsoft.com/dotnet/aspnet:10.0
+WORKDIR /app
+COPY --from=build /out .
+
+# This image already has a non-root user called app.
+USER app
+
+EXPOSE 8080
+ENTRYPOINT ["dotnet", "HelpDeskHQ.Api.dll"]
