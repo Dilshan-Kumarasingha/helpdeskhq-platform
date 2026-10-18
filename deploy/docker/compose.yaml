@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:18-alpine
+    environment:
+      POSTGRES_DB: helpdeskhq
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?missing}
+    volumes:
+      - db-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d helpdeskhq"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.api
+      target: migrate
+    image: helpdeskhq-migrate:dev
+    environment:
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=helpdeskhq;Username=postgres;Password=${POSTGRES_PASSWORD}
+      Jwt__Key: ${JWT_KEY:?missing}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.api
+    image: helpdeskhq-api:dev
+    environment:
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=helpdeskhq;Username=postgres;Password=${POSTGRES_PASSWORD}
+      Jwt__Key: ${JWT_KEY}
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+
+  web:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.web
+    image: helpdeskhq-web:dev
+    # 8080 is taken by the API when I run it from Visual Studio
+    ports:
+      - "8081:8080"
+    depends_on:
+      - api
+
+volumes:
+  db-data:
