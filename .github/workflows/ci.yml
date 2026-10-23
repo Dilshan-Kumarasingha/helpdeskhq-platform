@@ -78,4 +78,5 @@ jobs:
           image-ref: helpdeskhq-${{ matrix.name }}:ci
           severity: HIGH,CRITICAL
           ignore-unfixed: true
-          exit-code: 0
+          # fail the build when a fixable finding shows up
+          exit-code: 1
