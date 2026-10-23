@@ -1,16 +1,35 @@
-# React + Vite
+# HelpDeskHQ Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React frontend for the HelpDeskHQ helpdesk app. It is built with Vite.
 
-Currently, two official plugins are available:
+## What it does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Login page
+- Create a ticket
+- Show the list of tickets
 
-## React Compiler
+## Run it locally
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The API must be running on port 8080 first.
 
-## Expanding the Oxlint configuration
+```bash
+npm install
+npm run dev
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+Vite forwards every `/api` request to `http://localhost:8080`, so the code only uses relative paths like `/api/tickets`.
+
+## Build
+
+```bash
+npm run build
+```
+
+The build output goes to the `dist` folder. In Docker, nginx serves it (see `deploy/docker/Dockerfile.web`).
+
+## Folder structure
+
+- `src/components` - LoginForm, TicketForm, TicketList
+- `src/pages` - TicketsPage
+- `src/services` - all `fetch` calls (authService, ticketService)
+- `src/styles` - CSS files
