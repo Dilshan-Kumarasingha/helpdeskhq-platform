@@ -1,0 +1,28 @@
+version: 2
+
+updates:
+  - package-ecosystem: nuget
+    directory: /app/backend/HelpDeskHQ/HelpDeskHQ.Api
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: nuget
+    directory: /app/tests/HelpDeskHQ.Tests
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: npm
+    directory: /app/frontend
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker
+    directory: /deploy/docker
+    schedule:
+      interval: weekly
+
+  # keeps the versions in ci.yml up to date
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
